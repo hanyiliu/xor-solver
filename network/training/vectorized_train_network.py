@@ -34,31 +34,28 @@ def train_network(x, y): #player = 0,1
         g.append(np.zeros(np.shape(t[i])))
     for j in range(0,config.iterations):
 
-        for i in range(0, np.shape(x)[0]):
-            #print("data: {}".format(i))
-            #print("training data {}".format(i))
-            hypothesis0 = hypothesis.hypothesis(t, x[i])
-            gradient = computeGradient.computeGradient(t, x[i], y[i])
+
+        #print("training data {}".format(i))
+        hypothesis0 = hypothesis.hypothesis(t, x)
+        gradient = computeGradient.computeGradient(t, x, y)
 
 
-            cost0 = cost.cost(hypothesis0,y[i])
-            #either place epsilon here or place at t - g
+        cost0 = cost.cost(hypothesis0,y)
+        #either place epsilon here or place at t - g
 
-            for i in range(len(g)):
-                g[i] = g[i] + gradient[i]
+        g = gradient
 
 
-            costs.append(cost0)
-            c = cost0
+        costs.append(cost0)
+        c = cost0
 
         for i in range(len(t)):
             temp = np.copy(t[i])
             temp[:,0] = 0
-            t[i] = t[i]-(g[i]/m + config.lamb*temp/m) #adds regularization
+            t[i] = t[i]-(g[i] + config.lamb*temp/m) #adds regularization
 
         g = [] #gradient
-        for i in range(len(t)):
-            g.append(np.zeros(np.shape(t[i])))
+
         #print("finished iteration {} of {}. cost: {}%".format(j+1, config.iterations, c))
 
     #print("finished, saving thetas")

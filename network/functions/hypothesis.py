@@ -19,25 +19,46 @@ def hypothesis(t, x, placeholder=0, computingGradient = False, printData = False
 
     aList = []
     zList = []
-
-    x = np.insert(x, 0, 1, axis=0) #Add bias unit to input
+    #print("computing hypothesis")
+    #print("x shape: {}".format(np.size(np.shape(x))))
+    #print("x: {}".format(x))
+    if np.size(np.shape(x)) == 1:
+        x = np.insert(x, 0, 1, axis=0) #Add bias unit to input
+    else:
+        x = np.insert(x, 0, 1, axis=1) #for input with multiple x values
+    #print("x: {}".format(x))
     aList.append(x) #a0
     a = x
     for i in range(config.network_size[1]):
-
-        z = np.dot(t[i], a)
-        a = sigmoid(z)
-        a = np.insert(a, 0, 1, axis=0) #Add bias unit to a
+        #print("t[{}] shape: {}".format(i, np.shape(t[i])))
+        #print("a shape: {}".format(np.shape(a.T)))
+        z = np.dot(t[i], a.T)
+        #print("z: {}".format(z))
+        a = sigmoid(z).T
+        #print("a: {}".format(a))
+        #print("a shape: {}".format(np.shape(a)))
+        if np.size(np.shape(a)) == 1:
+            a = np.insert(a, 0, 1, axis=0) #Add bias unit to a
+        else:
+            #print("called")
+            a = np.insert(a, 0, 1, axis=1) #Add bias unit to a for multiple x values
+        #print("a: {}".format(a))
+        #print("a shape: {}".format(np.shape(a)))
 
         if computingGradient:
             zList.append(z) #z0
             aList.append(a) #a1
 
-    h = np.dot(t[config.network_size[1]], a)
+    h = np.dot(t[config.network_size[1]], a.T)
+    #print("h: {}".format(h))
     if computingGradient:
         zList.append(h) #z2
 
     h = sigmoid(h)
+
+    if np.size(np.shape(h)) > 1:
+        h = h.T
+    #print("h: {}".format(h))
     if computingGradient:
         aList.append(h) #a3
 
